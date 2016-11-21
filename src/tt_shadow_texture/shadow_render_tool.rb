@@ -6,12 +6,15 @@
 #-------------------------------------------------------------------------------
 
 require 'sketchup.rb'
-require 'tt_shadow_texture/shadow_render.rb'
+require 'tt_shadow_texture/constants/tool'
+require 'tt_shadow_texture/shadow_render'
 
 
 module TT::Plugins::ShadowTexture
 
   class ShadowRenderTool
+
+    include ToolConstants
 
     def activate
       model = Sketchup.active_model

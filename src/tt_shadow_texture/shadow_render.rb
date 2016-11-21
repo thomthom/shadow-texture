@@ -6,11 +6,16 @@
 #-------------------------------------------------------------------------------
 
 require 'sketchup.rb'
+require 'tt_shadow_texture/constants/boundingbox'
+require 'tt_shadow_texture/constants/view'
 
 
 module TT::Plugins::ShadowTexture
 
   class ShadowRender
+
+    include BoundingBoxConstants
+    include ViewConstants
 
     attr_reader :face, :pixel_size
 
