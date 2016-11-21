@@ -5,6 +5,7 @@
 #
 #-------------------------------------------------------------------------------
 
+require 'sketchup.rb'
 require 'tt_shadow_texture/shadow_render.rb'
 
 

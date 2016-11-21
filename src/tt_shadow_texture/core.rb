@@ -5,6 +5,7 @@
 #
 #-------------------------------------------------------------------------------
 
+require 'sketchup.rb'
 require 'tt_shadow_texture/shadow_render_tool.rb'
 
 
@@ -72,7 +73,8 @@ module TT::Plugins::ShadowTexture
     load __FILE__
     # Supporting files
     if defined?(PATH) && File.exist?(PATH)
-      x = Dir.glob(File.join(PATH, "**/*.{rb,rbs}")).each { |file|
+      x = Dir.glob(File.join(PATH, '**/*.{rb,rbs}')).each { |file|
+        # noinspection RubyResolve
         load file
       }
       x.length + 1

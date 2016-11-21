@@ -5,50 +5,44 @@
 #
 #-------------------------------------------------------------------------------
 
-require "sketchup.rb"
-require "extensions.rb"
+require 'json'
+require 'sketchup.rb'
+require 'extensions.rb'
 
-#-------------------------------------------------------------------------------
 
 module TT
  module Plugins
   module ShadowTexture
 
-  ### CONSTANTS ### ------------------------------------------------------------
+    file = __FILE__.dup
+    # Account for Ruby encoding bug under Windows.
+    file.force_encoding('UTF-8') if file.respond_to?(:force_encoding)
+    # Support folder should be named the same as the root .rb file.
+    folder_name = File.basename(file, '.*')
 
-  # Plugin information
-  PLUGIN          = self
-  PLUGIN_ID       = "TT_ShadowTexture".freeze
-  PLUGIN_NAME     = "Shadow Texture".freeze
-  PLUGIN_VERSION  = "0.1.0".freeze
+    # Path to the root .rb file (this file).
+    PATH_ROOT = File.dirname(file).freeze
 
-  # Resource paths
-  file = __FILE__.dup
-  file.force_encoding("UTF-8") if file.respond_to?(:force_encoding)
-  FILENAMESPACE = File.basename(file, ".*")
-  PATH_ROOT     = File.dirname(file).freeze
-  PATH          = File.join(PATH_ROOT, FILENAMESPACE).freeze
+    # Path to the support folder.
+    PATH = File.join(PATH_ROOT, folder_name).freeze
 
+    # Extension information.
+    extension_json_file = File.join(PATH, 'extension.json')
+    extension_json = File.read(extension_json_file)
+    EXTENSION = ::JSON.parse(extension_json, symbolize_names: true).freeze
 
-  ### EXTENSION ### ------------------------------------------------------------
-
-  unless file_loaded?(__FILE__)
-    loader = File.join(PATH, "bootstrap.rb")
-    @extension = SketchupExtension.new(PLUGIN_NAME, loader)
-    @extension.description = "Inspect and fix problems with geometry that "\
-      "should be manifold (solids)."
-    @extension.version     = PLUGIN_VERSION
-    @extension.copyright   = "Thomas Thomassen © 2016"
-    @extension.creator     = "Thomas Thomassen (thomas@thomthom.net)"
-    Sketchup.register_extension(@extension, true)
-  end
+    unless file_loaded?(__FILE__)
+      loader = File.join(PATH, 'bootstrap')
+      @extension = SketchupExtension.new(EXTENSION[:name], loader)
+      @extension.description = EXTENSION[:description]
+      @extension.version     = EXTENSION[:version]
+      @extension.copyright   = EXTENSION[:copyright]
+      @extension.creator     = EXTENSION[:creator]
+      Sketchup.register_extension(@extension, true)
+    end
 
   end # module ShadowTexture
  end # module Plugins
 end # module TT
 
-#-------------------------------------------------------------------------------
-
 file_loaded(__FILE__)
-
-#-------------------------------------------------------------------------------

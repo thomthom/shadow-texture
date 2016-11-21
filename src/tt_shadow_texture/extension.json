@@ -1,0 +1,9 @@
+{
+  "name": "Shadow Texture",
+  "product_id": "TT_ShadowTexture",
+  "version": "0.1.0",
+  "build": "1",
+  "creator": "Thomas Thomassen (thomas@thomthom.net)",
+  "copyright": "Thomas Thomassen © 2016",
+  "description": "Render shadows to textures."
+}

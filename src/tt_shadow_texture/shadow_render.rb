@@ -5,6 +5,8 @@
 #
 #-------------------------------------------------------------------------------
 
+require 'sketchup.rb'
+
 
 module TT::Plugins::ShadowTexture
 
@@ -58,7 +60,7 @@ module TT::Plugins::ShadowTexture
     end
 
     def draw_shadow_rays(bounds, view)
-      samples_source = samples_points(bounds, view)
+      samples_source = samples_points(bounds)
 
       samples = trace_shadow_rays(samples_source)
       samples_shadow, samples_sun = samples.partition { |sample| sample[:shadow] }
@@ -82,7 +84,7 @@ module TT::Plugins::ShadowTexture
       view.draw_points(points_shadow, 7, DRAW_PLUS, 'navy') unless points_shadow.empty?
     end
 
-    def samples_points(bounds, view)
+    def samples_points(bounds)
       x_step = (bounds.width / pixel_size)
       y_step = (bounds.height / pixel_size)
       offset = Geom::Vector3d.new(x_step / 2, y_step / 2, 0)
@@ -96,7 +98,7 @@ module TT::Plugins::ShadowTexture
     end
 
     def draw_samples(bounds, view)
-      points = samples_points(bounds, view)
+      points = samples_points(bounds)
       view.line_width = 2
       view.line_stipple = ''
       view.draw_points(points, 5, DRAW_CROSS, 'red')
