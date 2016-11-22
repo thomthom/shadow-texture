@@ -9,7 +9,6 @@ require 'sketchup.rb'
 require 'tt_shadow_texture/constants/boundingbox'
 require 'tt_shadow_texture/constants/tool'
 require 'tt_shadow_texture/constants/view'
-#require 'tt_shadow_texture/shadow_render'
 require 'tt_shadow_texture/shadow_sampler'
 
 
@@ -21,6 +20,18 @@ module TT::Plugins::ShadowTexture
     include BoundingBoxConstants
     include ViewConstants
     include ToolConstants
+
+    attr_reader :options
+
+    def initialize
+      @options = {
+          draw_shadows: true,
+          draw_pixel_grid: true,
+          draw_sample_grid: true,
+          draw_shadow_sample: false,
+          draw_sample_point: true,
+      }
+    end
 
     def activate
       model = Sketchup.active_model
@@ -53,10 +64,31 @@ module TT::Plugins::ShadowTexture
     end
 
     def draw(view)
-      draw_samples(@sampler, view)
+      draw_sampler(@sampler, view)
+    end
+
+    def getMenu(menu)
+      add_option_menu(menu, :draw_shadows, 'Draw Shadows')
+      menu.add_separator
+      add_option_menu(menu, :draw_sample_point, 'Draw Sample Points')
+      menu.add_separator
+      add_option_menu(menu, :draw_pixel_grid, 'Draw Pixel Grid')
+      menu.add_separator
+      add_option_menu(menu, :draw_sample_grid, 'Draw Sub-Pixel Grid')
+      add_option_menu(menu, :draw_shadow_sample, 'Draw Sub-Pixel Shadows')
     end
 
     private
+
+    def add_option_menu(menu, key, title)
+      menu_id = menu.add_item(title) {
+        options[key] = !options[key]
+        update(Sketchup.active_model.active_view)
+      }
+      menu.set_validation_proc(menu_id) {
+        options[key] ? MF_CHECKED : MF_ENABLED
+      }
+    end
 
     def update(view)
       Sketchup.vcb_label = 'Size / Samples'
@@ -64,45 +96,81 @@ module TT::Plugins::ShadowTexture
       view.invalidate
     end
 
-    def draw_samples(sampler, view)
+    def draw_sample_shadows?
+      options[:draw_shadow_sample]
+    end
+
+    def draw_pixel_shadows?
+      !draw_sample_shadows?
+    end
+
+    def draw_sampler(sampler, view)
       return if sampler.nil?
 
       pixel_points = []
       pixel_grid = []
 
-      sun_quads = []
-      shadow_quads = []
+      shadow_quads = {
+          255 => []
+      }
 
       sun_points = []
       shadow_points = []
 
       sampler.sample { |pixel, pixel_bounds|
 
-        pixel_points.concat(bounds_to_gl_lines(pixel_bounds))
-        pixel_grid.concat(bounds_grid_points(pixel_bounds, 2))
+        if options[:draw_pixel_grid]
+          pixel_points.concat(bounds_to_gl_lines(pixel_bounds))
+        end
+
+        if options[:draw_sample_grid]
+          pixel_grid.concat(bounds_grid_points(pixel_bounds, 2))
+        end
 
         pixel.each { |sample|
-          quad = bounds_to_gl_line_loop(sample[:bounds])
           if sample[:shadow]
-            shadow_points << sample[:source]
-            shadow_quads.concat(quad)
+            shadow_points << sample[:source] if options[:draw_sample_point]
+            if draw_sample_shadows?
+              quad = bounds_to_gl_line_loop(sample[:bounds])
+              shadow_quads[255].concat(quad) if draw_sample_shadows?
+            end
           else
-            sun_points << sample[:source]
-            sun_quads.concat(quad)
+            sun_points << sample[:source] if options[:draw_sample_point]
           end
         }
+
+        if draw_pixel_shadows?
+          quad = bounds_to_gl_line_loop(pixel_bounds)
+          weight = pixel.count { |sample| sample[:shadow] } / pixel.size.to_f
+          alpha = (255 * weight).to_i.abs
+          shadow_quads[alpha] ||= []
+          shadow_quads[alpha].concat(quad)
+        end
       }
 
-      view.line_width = 2
-      view.line_stipple = '2'
-      view.draw_points(sun_points, 7, DRAW_PLUS, 'orange') unless sun_points.empty?
-      view.draw_points(shadow_points, 7, DRAW_PLUS, 'navy') unless shadow_points.empty?
+      shadow_quads.each { |alpha, quads|
+        draw_quads(quads, Sketchup::Color.new(0, 0, 255, alpha), view)
+      } if options[:draw_shadows]
 
-      #draw_quads(sun_quads, Sketchup::Color.new(255, 255, 0, 64), view)
-      draw_quads(shadow_quads, Sketchup::Color.new(0, 0, 255, 64), view)
+      draw_samples(sun_points, 'orange', view)
+      draw_samples(shadow_points, 'purple', view)
 
-      draw_bounds(pixel_points, view)
-      draw_bounds_grid(pixel_grid, view)
+      draw_bounds(lift(pixel_points), view)
+      draw_bounds_grid(lift(pixel_grid), view)
+    end
+
+    LEVEL1 = 1.0
+    LEVEL2 = 2.0
+    LEVEL3 = 3.0
+
+    def lift(points, pixel_amount = LEVEL1, direction = Z_AXIS)
+      return points if points.empty?
+      view = Sketchup.active_model.active_view
+      amount = view.pixels_to_model(pixel_amount, points.first)
+      offset = direction.clone
+      offset.length = amount
+      tr = Geom::Transformation.new(offset)
+      points.map { |point| point.transform(tr) }
     end
 
     def bounds_to_gl_line_loop(bounds)
@@ -167,23 +235,29 @@ module TT::Plugins::ShadowTexture
       x_lines.flatten.concat(y_lines.flatten)
     end
 
+    def draw_samples(points, color, view)
+      view.line_width = 2
+      view.line_stipple = ''
+      view.draw_points(points, 7, DRAW_PLUS, color) unless points.empty?
+    end
+
     def draw_bounds(points, view)
       view.line_width = 2
       view.line_stipple = ''
       view.drawing_color = 'red'
-      view.draw(GL_LINES, points)
+      view.draw(GL_LINES, points) unless points.empty?
     end
 
     def draw_bounds_grid(points, view)
       view.line_width = 1
       view.line_stipple = '_'
       view.drawing_color = 'red'
-      view.draw(GL_LINES, points)
+      view.draw(GL_LINES, points) unless points.empty?
     end
 
     def draw_quads(points, color, view)
       view.drawing_color = color
-      view.draw(GL_QUADS, points)
+      view.draw(GL_QUADS, points) unless points.empty?
     end
 
   end
