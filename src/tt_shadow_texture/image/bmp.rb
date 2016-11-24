@@ -9,13 +9,13 @@ require 'sketchup.rb'
 require 'tt_shadow_texture/image/dib'
 
 
-module TT::Plugins::ShadowTexture
+module TT::Plugins::ShadowTexture::Image
 
   # Supported BMP variants:
   # * Bit-depths: 32bit, 24bit, 16bit, 8bit, 4bit, 1bit
   # * DIB Headers: OS2 v1, Windows v3
   # * Compression: BI_RGB (none)
-  class GL_BMP < GL_DIB
+  class BMP < DIB
 
     # http://en.wikipedia.org/wiki/BMP_file_format
     #
@@ -242,6 +242,6 @@ module TT::Plugins::ShadowTexture
       io.write(pixel_array)
     end
 
-  end # class GL_BMP
+  end # class BMP
 
 end # module
