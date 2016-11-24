@@ -54,9 +54,15 @@ module TT::Plugins::ShadowTexture::Image
 
     # @param [Integer] x
     # @param [Integer] y
-    # @param [Integer] color
+    # @param [Color] color
     def []=(x, y, color)
-      @data[index(x, y)] = color
+      @data[index(x, y)] = Color.new(color)
+    end
+
+    # @param [Integer] index
+    # @param [Color] color
+    def set(index, color)
+      @data[index] = Color.new(color)
     end
 
     # @return [Integer] Number of pixels.

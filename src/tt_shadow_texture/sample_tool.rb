@@ -9,6 +9,7 @@ require 'sketchup.rb'
 require 'tt_shadow_texture/constants/boundingbox'
 require 'tt_shadow_texture/constants/tool'
 require 'tt_shadow_texture/constants/view'
+require 'tt_shadow_texture/image/bmp'
 require 'tt_shadow_texture/shadow_sampler'
 
 
@@ -56,6 +57,12 @@ module TT::Plugins::ShadowTexture
       true
     end
 
+    def onLButtonUp(_flags, _x, _y, view)
+      view.model.start_operation('Render Shadow', true)
+      render_shadows(@sampler)
+      view.model.commit_operation
+    end
+
     def onUserText(text, view)
       samples, sub_samples = text.split(';')
       @sampler.samples = samples.to_i unless samples.nil?
@@ -94,6 +101,50 @@ module TT::Plugins::ShadowTexture
       Sketchup.vcb_label = 'Size / Samples'
       Sketchup.vcb_value = "#{@sampler.samples};#{@sampler.sub_samples}"
       view.invalidate
+    end
+
+    def render_shadows(sampler)
+      size = sampler.samples
+      bitspp = 24
+      background_color = Image::DIB::Color.new('white')
+      shadow_color = Image::DIB::Color.new('blue')
+      image = Image::BMP.new(size, size, bitspp, background_color)
+      # Render shadow to bitmap.
+      i = 0 # TODO: Get rid of silly manual index increment.
+      sampler.sample { |pixel|
+        weight = pixel.count { |sample| sample[:shadow] } / pixel.size.to_f
+        # If weight = 0, you will get color2. If weight = 1 you will get color1.
+        color = shadow_color.blend(background_color, weight)
+        image.set(i, color)
+        i += 1
+      }
+      # Save to temp file and load into material.
+      temp = File.join(Sketchup.temp_dir, "tt_shadow_#{Time.now.to_i}.bmp")
+      begin
+        image.save(temp)
+        face = sampler.face
+        model = face.model
+        material = face.material || model.materials.add("shadow_#{face.entityID}")
+        material.texture = temp
+      ensure
+        File.delete(temp) if File.exist?(temp)
+      end
+      # Ensure it's positioned correctly on face
+      points = bounds_to_gl_line_loop(sampler.bounds)
+      mapping = [
+          points[0],
+          Geom::Point3d.new(0, 0, 0),
+
+          points[1],
+          Geom::Point3d.new(1, 0, 0),
+
+          points[2],
+          Geom::Point3d.new(1, 1, 0),
+
+          points[3],
+          Geom::Point3d.new(0, 1, 0),
+      ]
+      face.position_material(material, mapping, true)
     end
 
     def draw_sample_shadows?

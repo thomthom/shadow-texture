@@ -34,8 +34,8 @@ module TT::Plugins::ShadowTexture
     def sample_points(bounds, row_width, col_width)
       offset = Geom::Vector3d.new(row_width / 2, col_width / 2, 0)
       points = []
-      samples.times { |x|
-        samples.times { |y|
+      samples.times { |y|
+        samples.times { |x|
           points << (bounds.min + [x * row_width, y * col_width, 0] + offset)
         }
       }
