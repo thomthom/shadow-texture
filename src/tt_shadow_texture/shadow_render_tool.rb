@@ -6,8 +6,7 @@
 #-------------------------------------------------------------------------------
 
 require 'sketchup.rb'
-require 'tt_shadow_texture/constants/tool'
-require 'tt_shadow_texture/constants/view'
+require 'tt_shadow_texture/drawing_helper'
 require 'tt_shadow_texture/shadow_render'
 require 'tt_shadow_texture/shadow_sampler'
 
@@ -17,8 +16,7 @@ module TT::Plugins::ShadowTexture
   # noinspection RubyInstanceMethodNamingConvention
   class ShadowRenderTool
 
-    include ViewConstants
-    include ToolConstants
+    include DrawingHelper
 
     attr_reader :options
 
@@ -81,6 +79,7 @@ module TT::Plugins::ShadowTexture
       draw_sampler(@sampler, view)
     end
 
+    # @param [Sketchup::Menu] menu
     def getMenu(menu)
       add_option_menu(menu, :draw_shadows, 'Draw Shadows')
       menu.add_separator
@@ -94,6 +93,10 @@ module TT::Plugins::ShadowTexture
 
     private
 
+    # @param [Sketchup::Menu] menu
+    # @param [Symbol] key
+    # @param [String] title
+    # @return [Integer] menu id
     def add_option_menu(menu, key, title)
       menu_id = menu.add_item(title) {
         options[key] = !options[key]
@@ -102,8 +105,10 @@ module TT::Plugins::ShadowTexture
       menu.set_validation_proc(menu_id) {
         options[key] ? MF_CHECKED : MF_ENABLED
       }
+      menu_id
     end
 
+    # @param [Sketchup::View] view
     def update(view)
       Sketchup.vcb_label = 'Size / Samples'
       Sketchup.vcb_value = "#{@sampler.samples};#{@sampler.sub_samples}"
@@ -118,6 +123,12 @@ module TT::Plugins::ShadowTexture
       !draw_sample_shadows?
     end
 
+    def draw_sample_points?
+      options[:draw_sample_point]
+    end
+
+    # @param [ShadowSampler] sampler
+    # @param [Sketchup::View] view
     def draw_sampler(sampler, view)
       return if sampler.nil?
 
@@ -143,13 +154,13 @@ module TT::Plugins::ShadowTexture
 
         pixel.each { |sample|
           if sample[:shadow]
-            shadow_points << sample[:source] if options[:draw_sample_point]
+            shadow_points << sample[:source] if draw_sample_points?
             if draw_sample_shadows?
               quad = sample[:bounds].points
               shadow_quads[255].concat(quad) if draw_sample_shadows?
             end
           else
-            sun_points << sample[:source] if options[:draw_sample_point]
+            sun_points << sample[:source] if draw_sample_points?
           end
         }
 
@@ -169,30 +180,12 @@ module TT::Plugins::ShadowTexture
       draw_samples(sun_points, 'orange', view)
       draw_samples(shadow_points, 'purple', view)
 
-      draw_bounds(lift(pixel_points), view)
-      draw_bounds_grid(lift(pixel_grid), view)
+      draw_bounds(lift(pixel_points, view), view)
+      draw_bounds_grid(lift(pixel_grid, view), view)
     end
 
-    LEVEL1 = 1.0
-    LEVEL2 = 2.0
-    LEVEL3 = 3.0
-
-    def lift(points, pixel_amount = LEVEL1, direction = Z_AXIS)
-      return points if points.empty?
-      view = Sketchup.active_model.active_view
-      amount = view.pixels_to_model(pixel_amount, points.first)
-      offset = direction.clone
-      offset.length = amount
-      tr = Geom::Transformation.new(offset)
-      points.map { |point| point.transform(tr) }
-    end
-
-    def draw_samples(points, color, view)
-      view.line_width = 2
-      view.line_stipple = ''
-      view.draw_points(points, 7, DRAW_PLUS, color) unless points.empty?
-    end
-
+    # @param [Array<Geom::Point3d>] points
+    # @param [Sketchup::View] view
     def draw_bounds(points, view)
       view.line_width = 2
       view.line_stipple = ''
@@ -200,6 +193,8 @@ module TT::Plugins::ShadowTexture
       view.draw(GL_LINES, points) unless points.empty?
     end
 
+    # @param [Array<Geom::Point3d>] points
+    # @param [Sketchup::View] view
     def draw_bounds_grid(points, view)
       view.line_width = 1
       view.line_stipple = '_'
@@ -207,11 +202,23 @@ module TT::Plugins::ShadowTexture
       view.draw(GL_LINES, points) unless points.empty?
     end
 
+    # @param [Array<Geom::Point3d>] points
+    # @param [Sketchup::Color] color
+    # @param [Sketchup::View] view
     def draw_quads(points, color, view)
       view.drawing_color = color
       view.draw(GL_QUADS, points) unless points.empty?
     end
 
-  end
+    # @param [Array<Geom::Point3d>] points
+    # @param [Sketchup::Color] color
+    # @param [Sketchup::View] view
+    def draw_samples(points, color, view)
+      view.line_width = 2
+      view.line_stipple = ''
+      view.draw_points(points, 7, DRAW_PLUS, color) unless points.empty?
+    end
 
-end
+  end # class
+
+end # module
