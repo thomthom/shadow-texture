@@ -7,33 +7,40 @@
 
 require 'sketchup.rb'
 require 'tt_shadow_texture/debug'
-require 'tt_shadow_texture/sample_tool'
 require 'tt_shadow_texture/shadow_render_tool'
 
 
 module TT::Plugins::ShadowTexture
 
   unless file_loaded?(__FILE__)
-    menu = UI.menu('Plugins')
+    # TODO: Use custom Command class to wrap bitmap/vector icons and error
+    # reporter.
+    plugins_menu = UI.menu('Plugins')
+    menu = plugins_menu.add_submenu('Shadow Texture')
     menu.add_item('Render Shadow Texture') {
       self.render_shadow
     }
-    menu.add_item('Render Shadow Samples') {
-      self.render_sample
+    menu.add_separator
+    menu.add_item('Analysis Tool') {
+      self.analysis_tool
+    }
+    menu.add_item('Profile') {
+      self.profile_shadow_render
     }
 
     file_loaded(__FILE__)
   end
 
-
   def self.render_shadow
-    Sketchup.active_model.select_tool(ShadowRenderTool.new)
-  #rescue Exception => error
-  #  ERROR_REPORTER.handle(error)
+    raise NotImplementedError
   end
 
-  def self.render_sample
-    Sketchup.active_model.select_tool(SampleTool.new)
+  def self.analysis_tool
+    Sketchup.active_model.select_tool(ShadowRenderTool.new)
+  end
+
+  def self.profile_shadow_render
+    raise NotImplementedError
   end
 
 end # module

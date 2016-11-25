@@ -6,19 +6,19 @@
 #-------------------------------------------------------------------------------
 
 require 'sketchup.rb'
-require 'tt_shadow_texture/boundingbox'
+require 'tt_shadow_texture/bounds2d'
 
 
 module TT::Plugins::ShadowTexture
 
   class Sampler
 
-    include BoundingBoxHelper
-
+    # @return [Bounds2d]
     attr_reader :bounds
 
+    # @param [Bounds2d, Geom::BoundingBox] bounds
     def initialize(bounds)
-      @bounds = bounds
+      @bounds = Bounds2d.new(bounds)
     end
 
     def sample(&block)

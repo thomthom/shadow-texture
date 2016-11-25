@@ -13,8 +13,11 @@ module TT::Plugins::ShadowTexture
 
   class MultiSampler < Sampler
 
+    # @return [Integer] sample sub-divisions
     attr_accessor :samples
 
+    # @param [Bounds2d] bounds
+    # @param [Integer] samples
     def initialize(bounds, samples)
       super(bounds)
       @samples = samples
@@ -31,6 +34,10 @@ module TT::Plugins::ShadowTexture
 
     private
 
+    # @param [Bounds2d] bounds
+    # @param [Integer] row_width
+    # @param [Integer] col_width
+    # @return [Array<Geom::Point3d>]
     def sample_points(bounds, row_width, col_width)
       offset = Geom::Vector3d.new(row_width / 2, col_width / 2, 0)
       points = []
@@ -42,6 +49,10 @@ module TT::Plugins::ShadowTexture
       points
     end
 
+    # @param [Geom::Point3d] point
+    # @param [Integer] width
+    # @param [Integer] height
+    # @return [Bounds2d]
     def point_to_bounds(point, width, height)
       half_width = width / 2.0
       half_height = height / 2.0
@@ -49,7 +60,7 @@ module TT::Plugins::ShadowTexture
       y1 = point.y - half_height
       x2 = point.x + half_width
       y2 = point.y + half_height
-      bb = Geom::BoundingBox.new
+      bb = Bounds2d.new
       bb.add([x1, y1, 0])
       bb.add([x2, y2, 0])
       bb
