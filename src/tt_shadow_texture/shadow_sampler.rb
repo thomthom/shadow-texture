@@ -34,12 +34,14 @@ module TT::Plugins::ShadowTexture
     end
 
     def sample(&block)
+      model = face.model
+      shadow_direction = model.shadow_info['SunDirection']
       # TODO: Clean up the parent method which return a pixel argument that
       # isn't used here.
       super { |_pixel, pixel_bounds|
         sampler = MultiSampler.new(pixel_bounds, sub_samples)
         sub_samples = sampler.sample { |sub_point, sub_bounds|
-          sample_shadow(sub_point, sub_bounds)
+          sample_shadow(model, sub_point, sub_bounds, shadow_direction)
         }
         block.call(sub_samples, pixel_bounds)
       }
@@ -66,20 +68,10 @@ module TT::Plugins::ShadowTexture
       [to_local, to_world]
     end
 
-    # @return [Sketchup::Model]
-    def model
-      face.model
-    end
-
-    # @return [Geom::Vector3d]
-    def shadow_direction
-      model.shadow_info['SunDirection']
-    end
-
     # @param [Geom::Point2d] point
     # @param [Bounds2d] bounds
     # @return [Hash]
-    def sample_shadow(point, bounds)
+    def sample_shadow(model, point, bounds, shadow_direction)
       world_point = point.transform(@to_world)
       ray = [world_point, shadow_direction]
       result = model.raytest(ray, true)
