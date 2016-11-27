@@ -7,6 +7,7 @@
 
 require 'sketchup.rb'
 require 'tt_shadow_texture/debug'
+require 'tt_shadow_texture/profiling'
 require 'tt_shadow_texture/shadow_render_tool'
 
 
@@ -24,9 +25,8 @@ module TT::Plugins::ShadowTexture
     menu.add_item('Analysis Tool') {
       self.analysis_tool
     }
-    menu.add_item('Profile') {
-      self.profile_shadow_render
-    }
+    menu.add_separator
+    self.add_profile_menus(menu)
 
     file_loaded(__FILE__)
   end
@@ -37,10 +37,6 @@ module TT::Plugins::ShadowTexture
 
   def self.analysis_tool
     Sketchup.active_model.select_tool(ShadowRenderTool.new)
-  end
-
-  def self.profile_shadow_render
-    raise NotImplementedError
   end
 
 end # module
