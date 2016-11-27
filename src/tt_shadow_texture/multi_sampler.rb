@@ -25,8 +25,10 @@ module TT::Plugins::ShadowTexture
     def sample(&block)
       row_size = bounds.width / samples.to_f
       col_size = bounds.height / samples.to_f
+      trs = point_to_bounds_transforms(row_size, col_size)
       sample_points(bounds, row_size, col_size).map { |point|
-        sample_bounds = point_to_bounds(point, row_size, col_size)
+        #sample_bounds = point_to_bounds(point, row_size, col_size)
+        sample_bounds = point_to_bounds_tr(point, trs)
         block.call(point, sample_bounds)
       }
     end
@@ -46,6 +48,20 @@ module TT::Plugins::ShadowTexture
         }
       }
       points
+    end
+
+    def point_to_bounds_transforms(width, height)
+      tr = Geom::Transformation.new([width / 2.0, height / 2.0, 0])
+      [tr, tr.inverse]
+    end
+
+    def point_to_bounds_tr(point, transforms)
+      pt1 = point.transform(transforms[0])
+      pt2 = point.transform(transforms[1])
+      bb = Bounds2d.new
+      bb.add(pt1)
+      bb.add(pt2)
+      bb
     end
 
     # @param [Geom::Point3d] point
