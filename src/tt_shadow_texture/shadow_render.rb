@@ -62,7 +62,8 @@ module TT::Plugins::ShadowTexture
       begin
         image.save(temp)
         materials = face.model.materials
-        material = face.material || materials.add("shadow_#{face.entityID}")
+        material_name = "shadow_#{face.entityID}"
+        material = materials[material_name] || materials.add(material_name)
         material.texture = temp
       ensure
         File.delete(temp) if File.exist?(temp)
@@ -74,7 +75,9 @@ module TT::Plugins::ShadowTexture
     # @param [Sketchup::Material] material
     # @param [Sketchup::Face]
     def map_to_face(sampler, material)
-      points = sampler.bounds.points
+      points = sampler.bounds.points.map { |point|
+        point.transform(sampler.to_world)
+      }
       mapping = UVMapping.new
       mapping.add(points[0], UV.new(0, 0))
       mapping.add(points[1], UV.new(1, 0))

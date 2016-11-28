@@ -31,6 +31,7 @@ module TT::Plugins::ShadowTexture
       @render.shadow_color = Image::DIB::Color.new('blue')
 
       @options = {
+          draw_local: false,
           draw_shadows: true,
           draw_pixel_grid: true,
           draw_sample_grid: true,
@@ -89,6 +90,8 @@ module TT::Plugins::ShadowTexture
       menu.add_separator
       add_option_menu(menu, :draw_sample_grid, 'Draw Sub-Pixel Grid')
       add_option_menu(menu, :draw_shadow_sample, 'Draw Sub-Pixel Shadows')
+      menu.add_separator
+      add_option_menu(menu, :draw_local, 'Draw Local')
     end
 
     private
@@ -145,11 +148,13 @@ module TT::Plugins::ShadowTexture
       sampler.sample { |pixel, pixel_bounds|
 
         if options[:draw_pixel_grid]
-          pixel_points.concat(pixel_bounds.segments)
+          points = pixel_bounds.segments
+          pixel_points.concat(points)
         end
 
         if options[:draw_sample_grid]
-          pixel_grid.concat(pixel_bounds.grid_segments(2).flatten)
+          points = pixel_bounds.grid_segments(2).flatten
+          pixel_grid.concat(points)
         end
 
         pixel.each { |sample|
@@ -157,7 +162,7 @@ module TT::Plugins::ShadowTexture
             shadow_points << sample[:source] if draw_sample_points?
             if draw_sample_shadows?
               quad = sample[:bounds].points
-              shadow_quads[255].concat(quad) if draw_sample_shadows?
+              shadow_quads[255].concat(quad)
             end
           else
             sun_points << sample[:source] if draw_sample_points?
@@ -174,14 +179,34 @@ module TT::Plugins::ShadowTexture
       }
 
       shadow_quads.each { |alpha, quads|
-        draw_quads(quads, Sketchup::Color.new(0, 0, 255, alpha), view)
+        draw_quads(tr(quads), Sketchup::Color.new(0, 0, 255, alpha), view)
       } if options[:draw_shadows]
 
-      draw_samples(sun_points, 'orange', view)
-      draw_samples(shadow_points, 'purple', view)
+      draw_samples(tr(sun_points), 'orange', view)
+      draw_samples(tr(shadow_points), 'purple', view)
 
-      draw_bounds(lift(pixel_points, view), view)
-      draw_bounds_grid(lift(pixel_grid, view), view)
+      draw_bounds(tr(lift(pixel_points, view)), view)
+      draw_bounds_grid(tr(lift(pixel_grid, view)), view)
+
+      points = local_face_points(sampler)
+      draw_polygon(lift(points, view, DRAW_LEVEL2), 'purple', view)
+    end
+
+    # @param [ShadowSampler] sampler
+    def local_face_points(sampler)
+      sampler.face.outer_loop.vertices.map { |vertex|
+        vertex.position.transform(sampler.to_local)
+      }
+    end
+
+    # @param [Array<Geom::Point3d>] points
+    # @return [Array<Geom::Point3d>]
+    def tr(points)
+      if options[:draw_local]
+        points
+      else
+        points.map { |point| point.transform(@sampler.to_world) }
+      end
     end
 
     # @param [Array<Geom::Point3d>] points
@@ -208,6 +233,16 @@ module TT::Plugins::ShadowTexture
     def draw_quads(points, color, view)
       view.drawing_color = color
       view.draw(GL_QUADS, points) unless points.empty?
+    end
+
+    # @param [Array<Geom::Point3d>] points
+    # @param [Sketchup::Color] color
+    # @param [Sketchup::View] view
+    def draw_polygon(points, color, view)
+      view.line_width = 2
+      view.line_stipple = ''
+      view.drawing_color = color
+      view.draw(GL_LINE_LOOP, points) unless points.empty?
     end
 
     # @param [Array<Geom::Point3d>] points
