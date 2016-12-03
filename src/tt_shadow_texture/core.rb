@@ -6,6 +6,7 @@
 #-------------------------------------------------------------------------------
 
 require 'sketchup.rb'
+require 'tt_shadow_texture/benchmark'
 require 'tt_shadow_texture/debug'
 require 'tt_shadow_texture/profiling'
 require 'tt_shadow_texture/shadow_render_tool'
@@ -27,6 +28,7 @@ module TT::Plugins::ShadowTexture
     }
     menu.add_separator
     self.add_profile_menus(menu)
+    Benchmarking.add_menus(menu)
 
     file_loaded(__FILE__)
   end
