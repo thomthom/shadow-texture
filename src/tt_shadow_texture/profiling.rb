@@ -35,4 +35,4 @@ module TT::Plugins::ShadowTexture
     file_loaded(__FILE__)
   end
 
-end # module TT::Plugins::SUbD
+end # module TT::Plugins::ShadowTexture
