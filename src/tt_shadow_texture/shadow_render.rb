@@ -6,7 +6,6 @@
 #-------------------------------------------------------------------------------
 
 require 'sketchup.rb'
-require 'tt_shadow_texture/constants/boundingbox'
 require 'tt_shadow_texture/image/bmp'
 require 'tt_shadow_texture/image/dib'
 require 'tt_shadow_texture/uv_mapping'
@@ -16,8 +15,6 @@ require 'tt_shadow_texture/shadow_sampler'
 module TT::Plugins::ShadowTexture
 
   class ShadowRender
-
-    include BoundingBoxConstants
 
     attr_accessor :background_color, :shadow_color
 
@@ -45,7 +42,7 @@ module TT::Plugins::ShadowTexture
     end
 
     # @param [ShadowSampler] sampler
-    # @param [Sketchup::Face]
+    # @return [Sketchup::Face]
     def render_to_face(sampler)
       image = render_to_bitmap(sampler)
       material = write_to_material(sampler.face, image)
@@ -56,7 +53,7 @@ module TT::Plugins::ShadowTexture
 
     # @param [Sketchup::Face] face
     # @param [Image::DIB] image
-    # @param [Sketchup::Material]
+    # @return [Sketchup::Material]
     def write_to_material(face, image)
       temp = File.join(Sketchup.temp_dir, "tt_shadow_#{Time.now.to_i}.bmp")
       begin
@@ -73,7 +70,7 @@ module TT::Plugins::ShadowTexture
 
     # @param [ShadowSampler] sampler
     # @param [Sketchup::Material] material
-    # @param [Sketchup::Face]
+    # @return [Sketchup::Face]
     def map_to_face(sampler, material)
       points = sampler.bounds.points.map { |point|
         point.transform(sampler.to_world)
