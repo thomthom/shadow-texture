@@ -15,18 +15,44 @@ module TT::Plugins::ShadowTexture
 
     # @param [Sketchup::Menu] menu
     def self.add_menus(menu)
-      menu.add_item('Simple Hex 8:2') {
-        self.benchmark(8, 2)
+      configs = [
+          [ 8, 2, 5],
+          [16, 2, 5],
+          [32, 2, 5],
+      ]
+      sub_menu = menu.add_submenu('Benchmark')
+      sub_menu.add_item('Run All') {
+        self.benchmark_all(configs)
+      }
+      sub_menu.add_separator
+      configs.each { |config|
+        sub_menu.add_item("Simple Hex #{config[0]}:#{config[1]}") {
+          self.benchmark(*config)
+        }
+      }
+    end
+
+    def self.benchmark_all(configs)
+      configs.each { |config|
+        self.benchmark(*config)
       }
     end
 
     # @param [Integer] pixels
     # @param [Integer] sub_samples
-    def self.benchmark(pixels, sub_samples)
-      face = setup_model
-      puts Benchmark.measure {
-        self.render_shadow(face, pixels, sub_samples)
-      }
+    def self.benchmark(pixels, sub_samples, iterations = 5)
+      face = self.setup_model
+      puts ''
+      puts "Benchmark Results (#{pixels} pixels, #{sub_samples} sub-samples):"
+      label = "#{pixels}px:#{sub_samples}"
+      GC.start
+      Benchmark.bm(10) do |bm|
+        iterations.times { |i|
+          bm.report("#{label} ##{i + 1}") {
+            self.render_shadow(face, pixels, sub_samples)
+          }
+        }
+      end
     end
 
     # @param [Sketchup::Face]
@@ -49,7 +75,7 @@ module TT::Plugins::ShadowTexture
 
     # @return [String]
     def self.models_path
-      File.join(self.project_path, 'model')
+      File.join(self.project_path, 'models')
     end
 
     # @param [String] basename
@@ -64,7 +90,7 @@ module TT::Plugins::ShadowTexture
 
     # @return [Sketchup::Face]
     def self.setup_model
-      model = load_test_model('simple-hex.skp')
+      model = self.load_model('simple-hex.skp')
       model.entities.grep(Sketchup::Face).find { |face|
         face.edges.size == 6
       }
