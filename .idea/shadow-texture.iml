@@ -14,11 +14,13 @@
     </content>
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/profiling" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/Shadow Texture" isTestSource="true" />
     </content>
     <content url="file://$MODULE_DIR$/../sketchup-ruby-api-stubs" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="io-console (v0.4.5, ruby-2.3.1-p112) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="minitest (v5.8.3, ruby-2.3.1-p112) [gem]" level="application" />
   </component>
   <component name="RModuleSettingsStorage">
     <LOAD_PATH number="6" string0="$MODULE_DIR$/src" string1="C:/Program Files/SketchUp/SketchUp 2017/Tools" string2="$MODULE_DIR$/../SketchUp-Ruby-API-Doc/stubs" string3="$MODULE_DIR$/../TestUp2/src" string4="$MODULE_DIR$/../SpeedUp/src" string5="$MODULE_DIR$/../sketchup-ruby-api-stubs/autoload" />
