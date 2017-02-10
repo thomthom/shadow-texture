@@ -5,9 +5,6 @@
 #
 #-------------------------------------------------------------------------------
 
-require 'sketchup.rb' # For RubyMine to provide auto-complete.
-gem 'minitest'        # For RubyMine to provide auto-complete.
-
 require 'testup/testcase'
 
 

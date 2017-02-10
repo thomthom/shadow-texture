@@ -45,3 +45,6 @@ AutoSave_*.skp
 
 # Layout Backup Files
 Backup of *.layout
+
+# Gem related files
+Gemfile\.lock

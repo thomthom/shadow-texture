@@ -5,7 +5,6 @@
 #
 #-------------------------------------------------------------------------------
 
-require 'sketchup.rb'
 require 'tt_shadow_texture/drawing_helper'
 require 'tt_shadow_texture/shadow_render'
 require 'tt_shadow_texture/shadow_sampler'

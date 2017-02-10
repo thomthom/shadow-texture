@@ -5,7 +5,6 @@
 #
 #-------------------------------------------------------------------------------
 
-require 'sketchup.rb'
 require 'speedup.rb'
 require 'testup/testcase'
 

@@ -5,9 +5,6 @@
 #
 #-------------------------------------------------------------------------------
 
-require 'sketchup.rb'
-
-
 module TT::Plugins::ShadowTexture
 
   # @note Debug method to reload the plugin.

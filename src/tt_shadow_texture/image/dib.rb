@@ -5,9 +5,6 @@
 #
 #-------------------------------------------------------------------------------
 
-require 'sketchup.rb'
-
-
 module TT::Plugins::ShadowTexture::Image
 
   # :data must be a hash where the key is a colour and the values are array of

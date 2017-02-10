@@ -5,7 +5,6 @@
 #
 #-------------------------------------------------------------------------------
 
-require 'sketchup.rb'
 require 'tt_shadow_texture/image/bmp'
 require 'tt_shadow_texture/image/dib'
 require 'tt_shadow_texture/uv_mapping'

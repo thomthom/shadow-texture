@@ -6,7 +6,6 @@
 #-------------------------------------------------------------------------------
 
 require 'benchmark'
-require 'sketchup.rb'
 
 
 module TT::Plugins::ShadowTexture
