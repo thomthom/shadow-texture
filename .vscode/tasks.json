@@ -1,0 +1,17 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "taskName": "Debug in SketchUp 2017",
+      "type": "shell",
+      "command": "ruby",
+      "args": [
+        "${workspaceFolder}/tools/debug.rb",
+        "2017"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
