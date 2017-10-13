@@ -11,6 +11,7 @@ module TT::Plugins::ShadowTexture::Image
   # points. This way the image data is drawn in the most efficient manner using
   # the SketchUp API available.
   class DIB
+
     attr_reader(:width, :height, :bitspp, :data)
 
     class Color < Sketchup::Color; end
@@ -45,7 +46,9 @@ module TT::Plugins::ShadowTexture::Image
     # @return [Color]
     def [](x, y)
       i = index(x, y)
-      raise IndexError, "index #{i} of #{@data.size} (#{x}, #{y})" if i < 0 || i > @data.size
+      if i < 0 || i > @data.size
+        raise IndexError, "index #{i} of #{@data.size} (#{x}, #{y})"
+      end
       @data[i]
     end
 
@@ -92,15 +95,13 @@ module TT::Plugins::ShadowTexture::Image
 
     # @param [IO] stream
     # @return [Buffer]
-    # noinspection RubyUnusedLocalVariable
-    def read_stream(stream)
+    def read_stream(stream) # rubocop:disable Lint/UnusedMethodArgument
       raise NotImplementedError
     end
 
     # @param [IO] stream
     # @return [Buffer]
-    # noinspection RubyUnusedLocalVariable
-    def write_stream(stream)
+    def write_stream(stream) # rubocop:disable Lint/UnusedMethodArgument
       raise NotImplementedError
     end
 

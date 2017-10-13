@@ -1,0 +1,9 @@
+{
+  "files.trimTrailingWhitespace": true,
+
+  "ruby.lint": {
+    "rubocop": true
+  },
+
+  "cSpell.language": "en"
+}

@@ -34,7 +34,9 @@ module TT::Plugins::ShadowTexture
     end
 
     def sample(&block)
-      super { |pixel, pixel_bounds|
+      # TODO: Clean up the parent method which return a pixel argument that
+      # isn't used here.
+      super { |_pixel, pixel_bounds|
         sampler = MultiSampler.new(pixel_bounds, sub_samples)
         sub_samples = sampler.sample { |sub_point, sub_bounds|
           sample_shadow(sub_point, sub_bounds)

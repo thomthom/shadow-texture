@@ -8,6 +8,7 @@
 require 'testup/testcase'
 
 
+# rubocop:disable Style/ExtraSpacing
 class TC_ShadowTexture < TestUp::TestCase
 
   # noinspection RubyConstantNamingConvention
@@ -95,7 +96,7 @@ class TC_ShadowTexture < TestUp::TestCase
         0,   0,   0,   0, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255
-  ]
+  ].freeze
 
   def test_render_to_bitmap_8x8x1
     image = render_to_bitmap(8, 1)
@@ -114,7 +115,7 @@ class TC_ShadowTexture < TestUp::TestCase
        63,   0,   0,   0, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255,
-  ]
+  ].freeze
 
   def test_render_to_bitmap_8x8x2
     image = render_to_bitmap(8, 2)
@@ -133,7 +134,7 @@ class TC_ShadowTexture < TestUp::TestCase
        95,   0,   0,   0, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255,
-  ]
+  ].freeze
 
   def test_render_to_bitmap_8x8x4
     image = render_to_bitmap(8, 4)

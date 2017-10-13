@@ -164,6 +164,7 @@ module TT::Plugins::ShadowTexture
               shadow_quads[255].concat(quad)
             end
           else
+            # rubocop:disable Style/IfInsideElse
             sun_points << sample[:source] if draw_sample_points?
           end
         }
@@ -177,9 +178,11 @@ module TT::Plugins::ShadowTexture
         end
       }
 
-      shadow_quads.each { |alpha, quads|
-        draw_quads(tr(quads), Sketchup::Color.new(0, 0, 255, alpha), view)
-      } if options[:draw_shadows]
+      if options[:draw_shadows]
+        shadow_quads.each { |alpha, quads|
+          draw_quads(tr(quads), Sketchup::Color.new(0, 0, 255, alpha), view)
+        }
+      end
 
       draw_samples(tr(sun_points), 'orange', view)
       draw_samples(tr(shadow_points), 'purple', view)

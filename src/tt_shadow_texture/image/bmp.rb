@@ -14,6 +14,8 @@ module TT::Plugins::ShadowTexture::Image
   # * Bit-depths: 32bit, 24bit, 16bit, 8bit, 4bit, 1bit
   # * DIB Headers: OS2 v1, Windows v3
   # * Compression: BI_RGB (none)
+  #
+  # rubocop:disable Metrics/ClassLength
   class BMP < DIB
 
     # http://en.wikipedia.org/wiki/BMP_file_format
@@ -63,13 +65,14 @@ module TT::Plugins::ShadowTexture::Image
 
     # @param [IO] stream
     # @return [Buffer]
-    # noinspection RubyUnusedLocalVariable
+    #
+    # rubocop:disable Metrics/MethodLength, Style/TernaryParentheses,
     def read_stream(stream)
       # BMP File Header
-      bmp_magic = file.read(2)
+      bmp_magic = stream.read(2)
       raise 'BMP Magic Marker not found.' if bmp_magic != MAGIC_MARKER
-      bmp_header = file.read(12).unpack('VvvV')
-      filesz, reserved1, reserved2, bmp_offset = bmp_header
+      _bmp_header = stream.read(12).unpack('VvvV')
+      # filesz, reserved1, reserved2, bmp_offset = bmp_header
 
       # DIB Header
       # Read the first uint32_t that gives the size of the DIB header and use
@@ -79,19 +82,19 @@ module TT::Plugins::ShadowTexture::Image
       width = nil
       height = nil
       # (!) Try to read V4 & V5 as BITMAPINFOHEADER. Seek to data start.
-      header_sz = file.read(4).unpack('V').first
+      header_sz = stream.read(4).unpack('V').first
       case header_sz
       when BITMAPCOREHEADER
-        dib_header = file.read(8).unpack('vvvv')
-        width, height, nplanes, bitspp = dib_header
+        dib_header = stream.read(8).unpack('vvvv')
+        width, height, _nplanes, bitspp = dib_header
       when BITMAPCOREHEADER2
         raise "Unsupported DIB Header. (Size: #{header_sz})"
       when BITMAPINFOHEADER
         # (!) l to read signed 4 byte integer LE does not work on PPC Mac.
-        #dib_header = file.read(36).unpack('llvvVVllVV')
-        dib_header = file.read(36).unpack('VVvvVVVVVV')
-        width, height, nplanes, bitspp, compress_type, bmp_bytesz,
-            hres, vres, ncolors, nimpcolors = dib_header
+        # dib_header = stream.read(36).unpack('llvvVVllVV')
+        dib_header = stream.read(36).unpack('VVvvVVVVVV')
+        width, height, _nplanes, bitspp, compress_type, _bmp_bytesz,
+            _hres, _vres, ncolors, _nimpcolors = dib_header
       when BITMAPV4HEADER
         raise "Unsupported DIB Header. (Size: #{header_sz})"
       when BITMAPV5HEADER
@@ -102,8 +105,9 @@ module TT::Plugins::ShadowTexture::Image
       # TODO: @height might be negative in some cases. Store absolute value, but
       # ensure the rest of this method use the local variable height and not the
       # method accessor.
-      @width, @height, @bitspp = width, height, bitspp
-      #puts dib_header.inspect
+      @width = width
+      @height = height
+      @bitspp = bitspp
 
       # Verify the supported compression
       unless compress_type.nil? || compress_type == BI_RGB
@@ -127,54 +131,53 @@ module TT::Plugins::ShadowTexture::Image
             raise "Unknown Color Palette. #{bitspp}"
           end
         end
-        ncolors.times { |i|
+        ncolors.times {
           if header_sz == BITMAPCOREHEADER
-            palette << file.read(3).unpack('CCC').reverse!
+            palette << stream.read(3).unpack('CCC').reverse!
           else
-            b,g,r,a = file.read(4).unpack('CCCC')
-            palette << [r,g,b] # TODO: Include alpha.
+            b, g, r, _a = stream.read(4).unpack('CCCC')
+            palette << [r, g, b] # TODO: Include alpha.
           end
         }
-        #puts palette.inspect
       end
 
       # Bitmap Data
       data = Buffer.new
-      row = y = x = 0
-      r, g, b, a, c, n = nil
+      # row = y = x = 0
+      # r, g, b, a, c, n = nil
       while row < height.abs
         # Row order is flipped if height is negative.
-        y = (height < 0) ? row : height.abs-1-row
+        # y = (height) < 0 ? row : height.abs - 1 - row
         x = 0
         while x < width.abs
           case bitspp
           when 1
-            i = file.read(1).unpack('C').first
+            i = stream.read(1).unpack('C').first
             8.times { |bit|
               data << palette[(i & 0x80 == 0) ? 0 : 1]
-              break if x+bit == width-1
+              break if x + bit == width - 1
               i <<= 1
             }
             x += 7
           when 4
-            i = file.read(1).unpack('C').first
-            data << palette[(i>>4) & 0x0f]
+            i = stream.read(1).unpack('C').first
+            data << palette[(i >> 4) & 0x0f]
             x += 1
             data << palette[i & 0x0f] if x < width
           when 8
-            i = file.read(1).unpack('C').first
+            i = stream.read(1).unpack('C').first
             data << palette[i]
           when 16
-            c = file.read(2).unpack('v').first
+            c = stream.read(2).unpack('v').first
             r = ((c >> 10) & 0x1f) << 3
-            g = ((c >>  5) & 0x1f) << 3
+            g = ((c >> 5)  & 0x1f) << 3
             b = (c >> 0x1f) << 3
-            data << [r,g,b]
+            data << [r, g, b]
           when 24
-            data << file.read(3).unpack('CCC').reverse!
+            data << stream.read(3).unpack('CCC').reverse!
           when 32
-            b,g,r,a = file.read(4).unpack('CCCC')
-            data << [r,g,b] # TODO: Include alpha.
+            b, g, r, _a = stream.read(4).unpack('CCCC')
+            data << [r, g, b] # TODO: Include alpha.
           else
             raise "UNKNOWN BIT DEPTH! #{bitspp}"
           end
@@ -182,21 +185,21 @@ module TT::Plugins::ShadowTexture::Image
           x += 1
         end
         # Skip trailing padding. Each row fills out to 32bit chunks
-        # RowSizeTo32bit - RowSizeToWholeByte
-        padding = (((@width*bitspp / 8) + 3) & ~3) - (@width*bitspp / 8.0).ceil
-        file.seek(padding, IO::SEEK_CUR)
+        row_size_to_32bit = ((@width * bitspp / 8) + 3) & ~3
+        row_size_to_whole_bytes = (@width * bitspp / 8.0).ceil
+        padding = row_size_to_32bit - row_size_to_whole_bytes
+        stream.seek(padding, IO::SEEK_CUR)
 
         row += 1
       end
-      #puts "> EOF: #{file.eof?.inspect} - Pos: #{file.pos} / #{filesz}\n\n"
       data
     end
 
     BMP_HEADER_SIZE = 2 + 4 + 2 + 2 + 4
 
     # TODO: Currently saves OS/2 24bit BMPs only - no palette.
-    # @param [IO] io
-    def write_stream(io)
+    # @param [IO] stream
+    def write_stream(stream)
       # DIB Header
       dib_header = [
         4 + 2 + 2 + 2 + 2, # bcSize
@@ -233,12 +236,12 @@ module TT::Plugins::ShadowTexture::Image
           filesize,          # bfSize
           0,                 # bfReserved1
           0,                 # bfReserved2
-          BMP_HEADER_SIZE + dib_header.size    # bfOffBits
+          BMP_HEADER_SIZE + dib_header.size # bfOffBits
       ].flatten.pack('vVvvV')
 
-      io.write(bmp_file_header)
-      io.write(dib_header)
-      io.write(pixel_array)
+      stream.write(bmp_file_header)
+      stream.write(dib_header)
+      stream.write(pixel_array)
     end
 
   end # class BMP
