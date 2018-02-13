@@ -32,7 +32,7 @@ module TT::Plugins::ShadowTexture::Image
     def initialize(*args)
       case args.size
       when 1
-        @data = read_image(filename)
+        @data = read_image(args.first)
       when 3, 4
         @width, @height, @bitspp, color = args
         @data = Buffer.new(@width * @height, Color.new(color))
