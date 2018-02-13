@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "taskName": "Debug in SketchUp 2017",
+      "label": "Debug in SketchUp 2017",
       "type": "shell",
       "command": "ruby",
       "args": [
