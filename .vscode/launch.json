@@ -15,7 +15,7 @@
       "name": "Listen for rdebug-ide",
       "type": "Ruby",
       "request": "attach",
-      "preLaunchTask": "Debug in SketchUp 2017",
+      // "preLaunchTask": "Debug in SketchUp 2017",
       "cwd": "${workspaceRoot}",
       "remoteHost": "127.0.0.1",
       "remotePort": "7000",
