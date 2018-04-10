@@ -9,7 +9,7 @@
 module TT::Plugins::ShadowTexture
 
   # Load profiling tests.
-  profiles_path = File.expand_path(File.join(__dir__, '../../profiling'))
+  profiles_path = File.expand_path(File.join(__dir__, '../../../profiling'))
   filter = File.join(profiles_path, 'PR_*.rb')
   Dir.glob(filter) { |filename|
     begin

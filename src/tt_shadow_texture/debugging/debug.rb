@@ -17,7 +17,7 @@ module TT::Plugins::ShadowTexture
     original_verbose = $VERBOSE
     $VERBOSE = nil
     load __FILE__
-    pattern = File.join(__dir__, '**/*.rb')
+    pattern = File.join(PATH, '**/*.rb')
     Dir.glob(pattern).each { |file| load file }.size
   ensure
     $VERBOSE = original_verbose

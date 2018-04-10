@@ -6,9 +6,9 @@
 #-------------------------------------------------------------------------------
 
 require 'sketchup.rb'
-require 'tt_shadow_texture/benchmark'
-require 'tt_shadow_texture/debug'
-require 'tt_shadow_texture/profiling'
+require 'tt_shadow_texture/debugging/benchmark'
+require 'tt_shadow_texture/debugging/debug'
+require 'tt_shadow_texture/debugging/profiling'
 require 'tt_shadow_texture/shadow_render_tool'
 
 
@@ -26,6 +26,7 @@ module TT::Plugins::ShadowTexture
     menu.add_item('Analysis Tool') {
       self.analysis_tool
     }
+    # TODO: Expose menus only if Debug mode.
     menu.add_separator
     self.add_profile_menus(menu)
     Benchmarking.add_menus(menu)

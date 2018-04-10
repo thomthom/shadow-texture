@@ -69,7 +69,7 @@ module TT::Plugins::ShadowTexture
 
     # @return [String]
     def self.project_path
-      File.expand_path(File.join(__dir__, '../..'))
+      File.expand_path(File.join(__dir__, '../../..'))
     end
 
     # @return [String]
