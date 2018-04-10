@@ -12,6 +12,16 @@
         "2017"
       ],
       "problemMatcher": []
+    },
+    {
+      "label": "Debug in SketchUp 2018",
+      "type": "shell",
+      "command": "ruby",
+      "args": [
+        "${workspaceFolder}/tools/debug.rb",
+        "2018"
+      ],
+      "problemMatcher": []
     }
   ]
 }
