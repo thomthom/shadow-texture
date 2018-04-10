@@ -1,7 +1,59 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 2.0
+  TargetRubyVersion: 2.1 # Should have been 2.0 but RuboCop dropped support.
+
+# I will align my arrays as I please!
+Layout/AlignArray:
+  Enabled: false
+
+# It's ok to use double empty lines for "paragraphs".
+Layout/EmptyLines:
+  Enabled: false
+
+# Extra space is fine.
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+# Extra space is fine.
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: false
+
+# RuboCop - why you hate white-space?
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+# It's ok to have two empty lines to create "paragraphs".
+Layout/EmptyLineBetweenDefs:
+  NumberOfEmptyLines: [1, 2]
+
+# Let git handle and normalize end of line. Eaiser for Windows.
+Layout/EndOfLine:
+  Enabled: false
+
+# Spaces are fine to line up matrices etc to be more readable.
+Layout/ExtraSpacing:
+  Enabled: false
+
+# This project use 4 spaces for continuity-lines.
+Layout/IndentArray:
+  Enabled: false
+
+# This project use 4 spaces for continuity-lines.
+Layout/IndentHash:
+  Enabled: false
+
+# Root extension file got an unusual indentation. That's fine.
+# This is very particular to my TT::Plugin::Extension name scheme.
+# Whoever might read this; the ::Plugin:: part is legacy naming I now regret.
+Layout/IndentationWidth:
+  Exclude:
+    - 'src/*.rb'
+    - 'profiling/PR_ShadowRender.rb' # TODO
+
+# Spaces are fine to line up matrices etc to be more readable.
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: false
 
 # Too noisy...
 Metrics/AbcSize:
@@ -13,6 +65,7 @@ Metrics/ClassLength:
     - 'profiling/**/*'
     - 'tests/**/*'
     - 'src/tt_shadow_texture/shadow_render_tool.rb' # TODO
+    - 'src/tt_shadow_texture/image/bmp.rb' # TODO
 
 # Too noisy...
 Metrics/CyclomaticComplexity:
@@ -23,83 +76,53 @@ Metrics/MethodLength:
   Max: 20
   Exclude:
     - 'src/tt_shadow_texture/shadow_render_tool.rb' # TODO
+    - 'src/tt_shadow_texture/image/bmp.rb' # TODO
 
 # Too noisy...
 Metrics/PerceivedComplexity:
   Enabled: false
 
-# I will align my arrays as I please!
-Style/AlignArray:
+# Tests follow a different naming convention.
+Naming/ClassAndModuleCamelCase:
+  Exclude:
+    - 'profiling/**/*'
+    - 'tests/**/*'
+
+# Tests follow a different naming convention.
+Naming/FileName:
+  Exclude:
+    - 'profiling/**/*'
+    - 'tests/**/*'
+
+# Tool classes must use the SketchUp API method names.
+Naming/MethodName:
+  Exclude:
+    - '**/*_tool.rb'
+
+# Variables such as x, y, z; u, v; r, g, b, is all too common within the world
+# of 3D and their meaning is clear.
+Naming/UncommunicativeMethodParamName:
   Enabled: false
 
 # It's ok to use {...} for multi-line blocks.
 Style/BlockDelimiters:
   Enabled: false
 
-# Tests follow a different naming convention.
-Style/ClassAndModuleCamelCase:
-  Exclude:
-    - 'profiling/**/*'
-    - 'tests/**/*'
-
 # Compact style is fine.
 Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Nah, it's ok.
+Style/CommentedKeyword:
   Enabled: false
 
 # No need for a doc-block for each class/module.
 Style/Documentation:
   Enabled: false
 
-# Tests follow a different naming convention.
-Style/FileName:
-  Exclude:
-    - 'profiling/**/*'
-    - 'tests/**/*'
-
-# It's ok to use double empty lines for "paragraphs".
-Style/EmptyLines:
-  Enabled: false
-
-# Extra space is fine.
-Style/EmptyLinesAroundClassBody:
-  Enabled: false
-
-# Extra space is fine.
-Style/EmptyLinesAroundModuleBody:
-  Enabled: false
-
-# RuboCop - why you hate white-space?
-Style/EmptyLinesAroundBlockBody:
-  Enabled: false
-
-# Let git handle and normalize end of line. Eaiser for Windows.
-Style/EndOfLine:
-  Enabled: false
-
 # Some times it simply reads better to not have a modifier conditional.
 Style/IfUnlessModifier:
   Enabled: false
-
-# This project use 4 spaces for continuity-lines.
-Style/IndentArray:
-  Enabled: false
-
-# This project use 4 spaces for continuity-lines.
-Style/IndentHash:
-  Enabled: false
-
-# Root extension file got an unusual indentation. That's fine.
-# This is very particular to my TT::Plugin::Extension name scheme.
-# Whoever might read this; the ::Plugin:: part is legacy naming I now regret.
-Style/IndentationWidth:
-  Exclude:
-    - 'src/*.rb'
-    - 'profiling/PR_ShadowRender.rb' # TODO
-
-# Tool classes must use the SketchUp API method names.
-Style/MethodName:
-  Exclude:
-    - '**/*_tool.rb'
 
 # No need to force `.zero` over `== 0`
 Style/NumericPredicate:
@@ -109,10 +132,13 @@ Style/NumericPredicate:
 Style/RedundantSelf:
   Enabled: false
 
-# Space is fine.
-Style/SpaceInsideBrackets:
-  Enabled: false
+Style/TernaryParentheses:
+  Exclude:
+    - 'src/tt_shadow_texture/image/bmp.rb' # TODO
 
 # It's fine to have trailing comma, makes adding/removing items easier.
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
   Enabled: false

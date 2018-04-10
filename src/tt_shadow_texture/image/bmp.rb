@@ -14,8 +14,6 @@ module TT::Plugins::ShadowTexture::Image
   # * Bit-depths: 32bit, 24bit, 16bit, 8bit, 4bit, 1bit
   # * DIB Headers: OS2 v1, Windows v3
   # * Compression: BI_RGB (none)
-  #
-  # rubocop:disable Metrics/ClassLength
   class BMP < DIB
 
     # http://en.wikipedia.org/wiki/BMP_file_format
@@ -65,8 +63,6 @@ module TT::Plugins::ShadowTexture::Image
 
     # @param [IO] stream
     # @return [Buffer]
-    #
-    # rubocop:disable Metrics/MethodLength, Style/TernaryParentheses,
     def read_stream(stream)
       # BMP File Header
       bmp_magic = stream.read(2)

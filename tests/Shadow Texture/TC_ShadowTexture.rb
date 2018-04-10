@@ -8,10 +8,8 @@
 require 'testup/testcase'
 
 
-# rubocop:disable Style/ExtraSpacing
 class TC_ShadowTexture < TestUp::TestCase
 
-  # noinspection RubyConstantNamingConvention
   ShadowTexture = TT::Plugins::ShadowTexture
 
   def setup

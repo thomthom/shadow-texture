@@ -166,6 +166,7 @@ module TT::Plugins::ShadowTexture
           else
             # rubocop:disable Style/IfInsideElse
             sun_points << sample[:source] if draw_sample_points?
+            # rubocop:enable Style/IfInsideElse
           end
         }
 
