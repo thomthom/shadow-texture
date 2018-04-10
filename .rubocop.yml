@@ -1,7 +1,5 @@
 inherit_from: .rubocop_todo.yml
 
-# inherit_from: .rubocop_todo.yml
-
 require: rubocop-sketchup
 
 AllCops:
@@ -76,7 +74,7 @@ Layout/IndentHash:
 Layout/IndentationWidth:
   Exclude:
     - 'src/*.rb'
-    - 'profiling/PR_ShadowRender.rb' # TODO
+    - 'profiling/PR_ShadowRender.rb'
 
 # Spaces are fine to line up matrices etc to be more readable.
 Layout/SpaceInsideArrayLiteralBrackets:
@@ -158,10 +156,6 @@ Style/NumericPredicate:
 # It's fine to refer to self.
 Style/RedundantSelf:
   Enabled: false
-
-Style/TernaryParentheses:
-  Exclude:
-    - 'src/tt_shadow_texture/image/bmp.rb' # TODO
 
 # It's fine to have trailing comma, makes adding/removing items easier.
 Style/TrailingCommaInArrayLiteral:
