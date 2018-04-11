@@ -3,7 +3,7 @@ version = ARGV[0].to_i
 port = ARGV[1] || '7000'
 
 if RUBY_PLATFORM =~ /darwin/
-  sketchup_path = "/Applications/SketchUp #{version}"
+  sketchup_path = "/Applications/SketchUp\\ #{version}"
   sketchup = File.join(sketchup_path, 'SketchUp.app')
 
   raise "SketchUp #{version} not found." unless File.exist?(sketchup)
