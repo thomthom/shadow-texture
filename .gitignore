@@ -17,3 +17,6 @@ Backup of *.layout
 
 # Gem related files
 Gemfile\.lock
+
+# Coverage files
+/coverage/

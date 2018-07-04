@@ -10,10 +10,12 @@ AllCops:
       Exclude:
       - profiling/
       - tests/
+      - tools/
     SketchupRequirements:
       Exclude:
       - profiling/
       - tests/
+      - tools/
     SketchupSuggestions:
       Exclude:
       - profiling/
