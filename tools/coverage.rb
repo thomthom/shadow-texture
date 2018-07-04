@@ -15,7 +15,7 @@ SimpleCov.root(solution_path)
 SimpleCov.start do
   add_group 'Debugging', 'src/tt_shadow_texture/debugging'
   add_group 'Image', 'src/tt_shadow_texture/image'
-  add_group 'Shadows', %r{^shadow_}
+  add_group 'Shadows', /^shadow_/
 end
 
 puts 'COVERAGE: Loading extension...'
