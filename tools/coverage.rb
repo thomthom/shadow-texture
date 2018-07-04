@@ -12,7 +12,11 @@ puts 'COVERAGE: Loading SimpleCov...'
 # https://github.com/colszowka/simplecov
 require 'simplecov'
 SimpleCov.root(solution_path)
-SimpleCov.start
+SimpleCov.start do
+  add_group 'Debugging', 'src/tt_shadow_texture/debugging'
+  add_group 'Image', 'src/tt_shadow_texture/image'
+  add_group 'Shadows', %r{^shadow_}
+end
 
 puts 'COVERAGE: Loading extension...'
 
