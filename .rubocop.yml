@@ -24,9 +24,9 @@ AllCops:
 # Ruby encoding issues here.
 SketchupSuggestions/FileEncoding:
   Exclude:
-  - src/tt_shadow_texture/benchmark.rb
-  - src/tt_shadow_texture/debug.rb
-  - src/tt_shadow_texture/profiling.rb
+  - src/tt_shadow_texture/debugging/benchmark.rb
+  - src/tt_shadow_texture/debugging/debug.rb
+  - src/tt_shadow_texture/debugging/profiling.rb
 
 # I will align my arrays as I please!
 Layout/AlignArray:
