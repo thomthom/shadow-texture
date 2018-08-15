@@ -18,7 +18,8 @@ AllCops:
       Exclude:
       - profiling/
       - tests/
-  TargetRubyVersion: 2.1 # Should have been 2.0 but RuboCop dropped support.
+      - tools/
+  TargetRubyVersion: 2.2 # Should have been 2.0 but RuboCop dropped support.
 
 # This cop is mainly there to educate new API users about the existance of
 # model.active_model.
