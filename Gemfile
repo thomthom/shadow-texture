@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
 group :development do
-  gem 'minitest'
-  gem 'rubocop'
-  gem 'rubocop-sketchup'
-  gem 'sketchup-api-stubs'
+  gem 'minitest', '~> 5.10.1'
+  gem 'rubocop', '~> 0.58.1'
+  gem 'rubocop-sketchup', '~> 0.4.1'
+  gem 'sketchup-api-stubs', '~> 0.3.1'
 end
