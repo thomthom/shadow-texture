@@ -35,17 +35,7 @@ UI.start_timer(0.0, false) {
 
   puts 'COVERAGE: Running tests...'
 
-  # TODO: Add API method in TestUp that combine all this, to run without UI.
-  options = {
-    clear_console: false,
-    show_console: true,
-    verbose: true,
-    ui: false,
-  }
-  test_suite = TestUp::API.discover_tests([test_suite_path]).first
-  TestUp::API.run_test_suite(test_suite, options: options) { |results|
-    # TODO: Check for failures.
-  }
+  TestUp::API.run_suite_without_gui(test_suite_path)
 
   puts 'COVERAGE: Terminating...'
 
